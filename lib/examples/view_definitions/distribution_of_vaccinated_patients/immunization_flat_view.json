@@ -1,0 +1,44 @@
+{
+  "name": "immunization_flat_view",
+  "resource": "Immunization",
+  "description": "Immunization flat view",
+  "status": "draft",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "id",
+          "path": "id",
+          "type": "id"
+        },
+        {
+          "name": "patient_id",
+          "path": "patient.getReferenceKey(Patient)",
+          "type": "id"
+        },
+        {
+          "name": "occurrence_date_time",
+          "path": "occurrence.ofType(dateTime)",
+          "type": "dateTime"
+        }
+      ],
+      "select": [
+        {
+          "forEach": "vaccineCode.coding",
+          "column": [
+            {
+              "name": "vaccine_code_system",
+              "path": "system",
+              "type": "string"
+            },
+            {
+              "name": "vaccine_code",
+              "path": "code",
+              "type": "code"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+<%= turbo_stream.update "action_result_#{@view_definition.id}" do %>
+  <% if @error %>
+    <div class="mt-4 p-4 bg-red-100 text-red-700 rounded">
+      <%= @error %>
+    </div>
+  <% else %>
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full table-auto border-collapse border">
+          <thead>
+            <tr>
+              <% @result.columns.each do |column| %>
+                <th><%= column.name %></th>
+              <% end %>
+            </tr>
+          </thead>
+        <tbody>
+          <% @result.each do |row| %>
+            <tr>
+              <% row.each do |value| %>
+                <td class="border p-2"><%= value %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+<% end %> 

@@ -1,0 +1,8 @@
+<%= turbo_stream.update "action_result_#{@view_definition.id}" do %>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-2">Generated Query</h2>
+    <pre class="bg-gray-100 p-4 rounded overflow-x-auto">
+      <%= @query_result %>
+    </pre>
+  </div>
+<% end %>

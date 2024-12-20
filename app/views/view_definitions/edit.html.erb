@@ -1,0 +1,10 @@
+<div class="mx-auto w-full">
+  <h1 class="font-bold text-4xl inline"><%= @view_definition.name %></h1>
+  <%= link_to "New view definition", new_view_definition_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium inline float-right" %>
+
+  <%= render "form", view_definition: @view_definition %>
+
+  <%= link_to "Generate query", view_definition_generate_query_path(@view_definition.id), class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium", data: { turbo_stream: true} %>
+
+  <%= turbo_frame_tag "action_result" %>
+</div>

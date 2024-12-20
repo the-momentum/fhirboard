@@ -1,0 +1,89 @@
+services:
+  postgres:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: fhirboard_backend
+      POSTGRES_PASSWORD: fhirboard_backend
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.development
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/rails
+      - gem_cache:/rails/vendor/bundle
+      - /rails/.bun
+      - ./lib/fhir-export:/app/fhir-export
+    env_file: .env
+    environment:
+      - RAILS_ENV=development
+    stdin_open: true
+    tty: true
+    tmpfs:
+      - /rails/tmp/pids:mode=770,size=1k,uid=1000,gid=1000
+    command: >
+      bash -c "bundle install && bundle exec rails db:prepare && bundle exec foreman start -f Procfile.dev -p 3000"
+
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+
+  superset:
+      build:
+        context: .
+        dockerfile: superset/Dockerfile
+      volumes:
+        - ./lib/fhir-export:/app/fhir-export
+      environment:
+        - ADMIN_USERNAME=admin
+        - ADMIN_EMAIL=admin@superset.com
+        - ADMIN_PASSWORD=admin
+        - SUPERSET_SECRET_KEY=b81a1eaee8a19f5fcff95ab3562cef4f1fc3e
+      ports:
+        - '8088:8088'
+
+  # sidekiq:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.development
+  #   depends_on:
+  #     - app
+  #     - postgres
+  #     - redis
+  #   volumes:
+  #     - .:/rails
+  #     - gem_cache:/rails/vendor/bundle
+  #     - ./lib/fhir-export:/app/fhir-export
+  #   env_file: .env
+  #   tmpfs:
+  #     - /rails/tmp/pids:mode=770,size=1k,uid=1000,gid=1000
+  #   command: >
+  #     bash -c "curl -s --retry 999 --retry-connrefused --retry-delay 5 -o /dev/null http://app:3000 &&
+  #              bundle install &&
+  #              bundle exec sidekiq"
+
+
+  # mailcatcher:
+  #   image: schickling/mailcatcher
+  #   ports:
+  #     - "1080:1080"
+
+volumes:
+  postgres_data:
+  redis_data:
+  gem_cache:

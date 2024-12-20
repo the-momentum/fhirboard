@@ -1,0 +1,4 @@
+en:
+  errors:
+    common:
+      invalid_parameters: Invalid parameters

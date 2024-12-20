@@ -1,0 +1,36 @@
+# database pool number reflects several factors:
+# - default Sidekiq concurrency (5)
+# - 2 Puma workers, 5 threads each (10)
+# - dead database connection buffor (5)
+# - PostgreSQL default connections number is 100
+
+default: &default
+  adapter: postgresql
+  host: <%= ENV.fetch("DATABASE_HOST", "postgres") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  pool: 20
+  timeout: 5000
+  user: <%= ENV.fetch("DATABASE_USER", "fhirboard_backend") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "fhirboard_backend") %>
+
+development:
+  <<: *default
+  host: postgres
+  database: <%= ENV.fetch("DATABASE_NAME", "fhirboard_backend_development") %>
+
+test:
+  <<: *default
+  host: postgres
+  database: <%= ENV.fetch("DATABASE_NAME", "fhirboard_test") %>
+
+staging:
+  <<: *default
+  database: <%= ENV.fetch("DATABASE_NAME", "fhirboard") %>
+
+production:
+  <<: *default
+  database: <%= ENV.fetch("DATABASE_NAME", "fhirboard") %>
+
+duckdb:
+  adapter: duckdb
+  database: db/duckdb/analytics.duckdb

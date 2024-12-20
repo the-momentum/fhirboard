@@ -1,0 +1,54 @@
+<div class="mx-auto w-full">
+  <h1 class="font-bold text-4xl inline"><%= @analysis.name %></h1>
+
+  <%= link_to "Save as views", analysis_save_as_views_path(@analysis), class: "rounded-lg py-3 px-5 bg-gray-100 block font-medium text-black float-right", data: { turbo_stream: true } %>
+  <%= link_to "New view definition", new_view_definition_path(analysis_id: @analysis.id), class: "rounded-lg py-3 px-5 mr-10 bg-blue-600 text-white block font-medium inline-block float-right" %>
+
+  <%= render "form", analysis: @analysis %>
+
+  <h2 class="font-bold text-3xl mt-10">View definitions</h2>
+  <% @analysis.view_definitions.each do |vd| %>
+    <h3 class="font-bold text-2xl mt-5"><%= vd.name %></h3>
+    <%= render "view_definitions/form", view_definition: vd %>
+
+    <div class="relative inline-block text-left" data-controller="dropdown">
+      <button 
+        type="button" 
+        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        data-action="dropdown#toggle"
+      >
+        Actions
+        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <div 
+        data-dropdown-target="menu"
+        class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
+      >
+        <div class="py-1">
+          <%= link_to view_definition_generate_query_path(vd),
+              class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+              data: { turbo_stream: true } do %>
+            Generate query
+          <% end %>
+          
+          <%= button_to view_definition_run_query_path(vd),
+              method: :post,
+              class: "w-full text-left group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+              data: { turbo_stream: true } do %>
+            Run query
+          <% end %>
+
+          <%= link_to view_definition_save_to_superset_path(vd),
+              class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+              data: { turbo_stream: true } do %>
+            Save & open in Superset
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <%= turbo_frame_tag "action_result_#{vd.id}" %>
+  <% end %>
+</div>

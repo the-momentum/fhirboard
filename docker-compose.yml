@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:16
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - traefik-public
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    networks:
+      - traefik-public
+
+  traefik:
+    image: traefik:v2.10
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/acme.json:/acme.json
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config.yml:/etc/traefik/config.yml:ro
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.production
+    tty: true
+    stdin_open: true
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./lib/fhir-export:/app/fhir-export
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`fhir.healthion.dev`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+    networks:
+      - traefik-public
+
+  superset:
+    build:
+      context: .
+      dockerfile: superset/Dockerfile
+      args:
+        - ADMIN_USERNAME=${SUPERSET_ADMIN_USERNAME}
+        - ADMIN_EMAIL=${SUPERSET_ADMIN_EMAIL}
+        - ADMIN_PASSWORD=${SUPERSET_ADMIN_PASSWORD}
+    volumes:
+      - ./lib/fhir-export:/app/fhir-export
+    env_file: .env
+    ports:
+      - '8088:8088'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.superset.rule=Host(`superset.fhir.healthion.dev`)"
+      - "traefik.http.routers.superset.entrypoints=websecure"
+      - "traefik.http.routers.superset.tls.certresolver=letsencrypt"
+      - "traefik.http.services.superset.loadbalancer.server.port=8088"
+    networks:
+      - traefik-public
+
+volumes:
+  postgres_data:
+  redis_data:
+  gem_cache:
+
+networks:
+  traefik-public:
+    external: true

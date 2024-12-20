@@ -1,0 +1,30 @@
+<%= turbo_stream.update "query_results" do %>
+  <% if @error %>
+    <div class="alert alert-danger">
+      <%= @error %>
+    </div>
+  <% else %>
+    <table class="table">
+      <% if @query_result.any? %>
+        <thead>
+          <tr>
+            <% @query_result.first.keys.each do |column| %>
+              <th><%= column %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @query_result.each do |row| %>
+            <tr>
+              <% row.values.each do |value| %>
+                <td><%= value %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      <% else %>
+        <p>Query executed successfully but returned no results.</p>
+      <% end %>
+    </table>
+  <% end %>
+<% end %> 

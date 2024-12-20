@@ -1,0 +1,23 @@
+attributes:
+  - content
+  - foreign_key
+  - inheritance
+  - timestamps
+disconnected: true
+filename: database_diagram
+filetype: png
+indirect: true
+inheritance: false
+markup: true
+notation: simple
+orientation: horizontal
+polymorphism: true
+sort: true
+warn: true
+title: Database ERD diagram
+exclude: "ActiveRecord::InternalMetadata,ActiveRecord::SchemaMigration,ApplicationRecord"
+only: null
+only_recursion_depth: null
+prepend_primary: false
+cluster: false
+splines: spline
