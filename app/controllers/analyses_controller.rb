@@ -40,12 +40,12 @@ class AnalysesController < ApplicationController
     analysis = Analysis.find(params[:analysis_id])
 
     begin
-      db  = DuckDB::Database.open("/app/fhir-export/dcdb.duckdb")
+      db  = DuckDB::Database.open("/app/fhir-export/duckdb_persistent.duckdb")
       con = db.connect
 
       analysis.view_definitions.each do |vd|
       
-        query_result = ViewDefinitions::Services::GenerateQuery.new(vd, :create_view).call
+        query_result = ViewDefinitions::Services::GenerateQuery.new(vd, template_type: :create_view).call
 
         con.query(query_result)
       end
