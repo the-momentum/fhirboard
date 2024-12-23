@@ -11,9 +11,13 @@ This project provides a containerized environment that, with a simple docker com
 ### Main Features
 
 - Define analytical use cases and create specific ViewDefinitions within them
-- Preview SQL queries generated from individual ViewDefinitions (currently supporting FlatQuack runner for translating ViewDefinitions to DuckDB queries)
+- Preview SQL queries generated from individual ViewDefinitions (currently supporting [FlatQuack](https://github.com/gotdan/flatquack) runner for translating ViewDefinitions to DuckDB queries)
 - View query results directly in the application
 - Export defined queries as views to a DuckDB database, which is shared between the Rails App and Superset
+
+### Who can use it?
+- SQL-on-FHIR Enthusiasts: While there is a [playground](https://sql-on-fhir.org/extra/playground.html) on the official page, it doesn't allow you to run queries on your own FHIR export data or create views to combine data
+- Data Analysts: Easily visualize FHIR analytics data - with the app and Superset in one container, you can get started quickly
 
 ##  Setup
 
@@ -33,6 +37,25 @@ docker-compose up --build # running for first time to build images
 
 docker-compose up         # up compose
 ```
+
+### 3. Seed database
+
+To populate your database with initial sample data, run:
+```
+docker compose exec app bundle exec rails db:seed 
+```
+
+### 4. Start using!  
+After running above command, you will have:
+- One analytical case with two example ViewDefinitions
+- A persistent DuckDB database that can be accessed from both the app and Superset
+
+All set! By default, the directory containing the exported FHIR data is set to `/app/fhir-export` - thanks to the configuration in docker-compose, it is shared between the FHIRboard application and Superset, making the dataset accessible in both locations. 
+To use your own dataset, simply place your export files in the designated directory. Future releases will support direct upload of FHIR export data and potential integration with FHIR servers using bulk export API endpoints.
+
+Below is a short video demonstrating the capabilities of this tool.
+
+![App demo](readme-assets/Screen%20Recording%202024-12-23%20at%2013.32.07.gif)
 
 ## Unit tests
 
