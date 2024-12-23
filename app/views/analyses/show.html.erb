@@ -6,6 +6,8 @@
 
   <%= render "form", analysis: @analysis %>
 
+  <%= turbo_frame_tag "analysis_flash" %>
+
   <h2 class="font-bold text-3xl mt-10">View definitions</h2>
   <% @analysis.view_definitions.each do |vd| %>
     <h3 class="font-bold text-2xl mt-5"><%= vd.name %></h3>

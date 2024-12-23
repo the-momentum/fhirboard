@@ -1,0 +1,10 @@
+<%= turbo_stream.update "analysis_flash" do %>
+  <div class="bg-green-100 p-4 rounded-lg shadow">
+    <p class="text-md">
+      Query saved to Superset. 
+      <%= link_to "Open SQL lab", "http://localhost:8088/sqllab", 
+          target: :_blank,
+          class: "font-semibold text-blue-600 hover:text-blue-800 underline" %>
+    </p>
+  </div>
+<% end %>
