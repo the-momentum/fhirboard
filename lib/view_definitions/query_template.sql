@@ -1,6 +1,3 @@
-{{fq_sql_macros}}
-
-
 WITH transformed AS (
   SELECT {{fq_sql_transform_expression}} AS result 
   FROM read_json_auto(
@@ -12,4 +9,4 @@ WITH transformed AS (
 SELECT {{fq_sql_flattening_cols}}
 FROM transformed
 {{fq_sql_flattening_tables}}
-LIMIT 10;
+LIMIT 100;
