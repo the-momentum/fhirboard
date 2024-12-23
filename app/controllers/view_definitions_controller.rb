@@ -72,7 +72,7 @@ class ViewDefinitionsController < ApplicationController
     Rails.logger.info "Executing query: #{@query}"
 
     begin
-      db = DuckDB::Database.open # in memory
+      db = DuckDB::Database.open("lib/fhir-export/duckdb_persistent.duckdb")
       con = db.connect
 
       @result = con.query(@query)
