@@ -55,7 +55,7 @@ To use your own dataset, simply place your export files in the designated direct
 
 Below is a short video demonstrating the capabilities of this tool.
 
-![App demo](readme-assets/Screen%20Recording%202024-12-23%20at%2013.32.07.gif)
+<video src="https://github.com/user-attachments/assets/a390f8da-5af5-4281-bb4a-f97b66aceacb" controls="controls"></video>
 
 ## Unit tests
 
