@@ -2,7 +2,7 @@
   <div class="bg-green-100 p-4 rounded-lg shadow">
     <p class="text-md">
       Query saved to Superset. 
-      <%= link_to "Click here", "http://localhost:8088/sqllab?savedQueryId=#{@view_id}", 
+      <%= link_to "Click here", "#{ENV['SUPERSET_URL']}/sqllab?savedQueryId=#{@view_id}", 
           target: :_blank,
           class: "font-semibold text-blue-600 hover:text-blue-800 underline" %>
       to open query

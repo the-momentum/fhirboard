@@ -28,6 +28,7 @@ RAILS_MASTER_KEY=*********
 SUPERSET_ADMIN_USERNAME=*********
 SUPERSET_ADMIN_PASSWORD=*********
 SUPERSET_ADMIN_EMAIL=*********
+SUPERSET_URL=********* (for localhost use http://superset:8088)
 ```
 
 ### 2. Build docker images and up compose
