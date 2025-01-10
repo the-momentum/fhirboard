@@ -70,7 +70,7 @@ USER rails:rails
 # Install bun
 ENV BUN_INSTALL="/rails/.bun"
 ENV PATH="$BUN_INSTALL/bin:$PATH"
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.38"
 RUN bunx flatquack
 
 # Install dependencies
