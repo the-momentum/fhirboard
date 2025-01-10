@@ -46,6 +46,11 @@ To populate your database with initial sample data, run:
 docker compose exec app bundle exec rails db:seed 
 ```
 
+This command creates:
+- one analytical case with two view definitions ([link](lib/examples/view_definitions/distribution_of_vaccinated_patients))
+- a connection with the database in Superset
+- macros in a DuckDB database which is shareable between the Rails app and Superset
+
 ### 4. Start using!  
 After running above command, you will have:
 - One analytical case with two example ViewDefinitions
