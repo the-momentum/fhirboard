@@ -1,4 +1,4 @@
-# fhirboard Backend
+# fhirboard
 
 ## App Purpose
 The inspiration for this application came from attending the Analytics on FHIR conference. After watching several presentations, I realized there was a need for a practical environment to experience how [SQL on FHIR](https://build.fhir.org/ig/FHIR/sql-on-fhir-v2/) simplifies healthcare data analytics.
