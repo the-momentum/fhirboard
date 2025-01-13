@@ -5,7 +5,7 @@ module Superset
   module Services
     class ApiService
       def initialize
-        @conn = Faraday.new(url: "#{ENV['SUPERSET_URL']}/api/v1/") do |f|
+        @conn = Faraday.new(url: "#{ENV['SUPERSET_INTERNAL_URL']}/api/v1/") do |f|
           f.request :json
           f.response :json
           f.response :logger
