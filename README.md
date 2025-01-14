@@ -1,6 +1,12 @@
-# fhirboard
+<div align="center">
+  <img src="https://cdn.prod.website-files.com/66a1237564b8afdc9767dd3d/66df7b326efdddf8c1af9dbb_Momentum%20Logo.svg" height="64">
 
-## App Purpose
+  [![Contact us](https://img.shields.io/badge/Contact%20us-AFF476.svg)](mailto:hello@themomentum.ai?subject=Terraform%20Modules)
+  [![Check Momentum](https://img.shields.io/badge/Check%20Momentum-1f6ff9.svg)](https://themomentum.ai)
+  [![MIT License](https://img.shields.io/badge/License-MIT-636f5a.svg?longCache=true)](LICENSE)
+</div>
+
+## Overview
 The inspiration for this application came from attending the Analytics on FHIR conference. After watching several presentations, I realized there was a need for a practical environment to experience how [SQL on FHIR](https://build.fhir.org/ig/FHIR/sql-on-fhir-v2/) simplifies healthcare data analytics.
 This project provides a containerized environment that, with a simple docker compose up command, gives you access to:
 
@@ -71,3 +77,34 @@ Tests are written in RSpec and can be run with following command:
 ```
 docker compose exec app rspec
 ```
+
+## Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+Please review our contribution guidelines before submitting changes.
+
+## Support
+
+- Open an issue for bug reports or feature requests
+- Contact us at hello@themomentum.ai for direct support
+
+## Contributors
+
+<a href="https://github.com/TheMomentumAI/healthstack/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=the-momentum/fhirboard" />
+</a>
+
+## License
+
+HealthStack is available under the MIT License.
+
+---
+
+*Built with ❤️ by [Momentum](https://themomentum.ai)*
