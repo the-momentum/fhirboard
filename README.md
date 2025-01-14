@@ -69,5 +69,5 @@ Below is a short video demonstrating the capabilities of this tool.
 Tests are written in RSpec and can be run with following command:
 
 ```
-docker compose exec app rspec
+docker compose exec app bundle exec rspec
 ```
