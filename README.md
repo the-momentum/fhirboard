@@ -30,7 +30,6 @@ This project provides a containerized environment that, with a simple docker com
 ### 1. Create `.env` file in project's root directory
 
 ```
-RAILS_MASTER_KEY=*********
 SUPERSET_ADMIN_USERNAME=*********
 SUPERSET_ADMIN_PASSWORD=*********
 SUPERSET_ADMIN_EMAIL=*********
