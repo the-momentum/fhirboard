@@ -96,13 +96,13 @@ Please review our contribution guidelines before submitting changes.
 
 ## Contributors
 
-<a href="https://github.com/TheMomentumAI/healthstack/graphs/contributors">
+<a href="https://github.com/the-momentum/fhirboard/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=the-momentum/fhirboard" />
 </a>
 
 ## License
 
-HealthStack is available under the MIT License.
+FHIRboard is available under the MIT License.
 
 ---
 
