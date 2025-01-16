@@ -1,10 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = []
+    static targets = ["link"]
+    static values = {
+        baseUrl: String
+    }
+
 
     connect() {
         this.handleSession()
+        this.updateSessionLink()
     }
 
     handleSession() {
@@ -32,5 +37,16 @@ export default class extends Controller {
                 localStorage.setItem('sessionToken', token)
             }
         })
+    }
+
+    updateSessionLink() {
+        if (this.hasLinkTarget) {
+            const token = localStorage.getItem('sessionToken')
+            if (token) {
+                const url = new URL(window.location.href)
+                url.searchParams.set('session_id', token)
+                this.linkTarget.href = url.toString()
+            }
+        }
     }
 }

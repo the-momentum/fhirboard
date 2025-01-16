@@ -101,11 +101,14 @@
         </div>
       </div>
 
-      <main class="py-10 lg:pl-72">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <%= yield %>
-        </div>
-      </main>
+     <main class="py-10 lg:pl-72">
+       <div class="bg-indigo-700 px-4 py-2 mb-4">
+         <%= session_link %>
+       </div>
+       <div class="px-4 sm:px-6 lg:px-8">
+         <%= yield %>
+       </div>
+     </main>
     </div>
   </body>
 </html>
