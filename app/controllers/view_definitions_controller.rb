@@ -1,8 +1,12 @@
 class ViewDefinitionsController < ApplicationController
+  include SessionScoped
+
   before_action :set_view_definition, only: %i[show edit update destroy]
+  before_action :set_view_definition_by_view_definition_id,
+                only: %i[generate_query run_query save_to_superset execute_query]
 
   def index
-    @view_definitions = ViewDefinition.all
+    @view_definitions = session_scoped_resource(ViewDefinition)
   end
 
   def show; end
@@ -15,7 +19,7 @@ class ViewDefinitionsController < ApplicationController
 
   def create
     begin
-      @view_definition = ViewDefinition.new(altered_params)
+      @view_definition = ViewDefinition.new(altered_params.merge(session: current_session))
       if @view_definition.save
         redirect_to analysis_path(@view_definition.analysis), notice: "View definition was successfully created."
       else
@@ -54,9 +58,7 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def generate_query
-    @view_definition = ViewDefinition.find(params[:view_definition_id])
-
-    @query_result    = ViewDefinitions::Services::GenerateQuery.new(@view_definition).call
+    @query_result = ViewDefinitions::Services::GenerateQuery.new(@view_definition).call
 
     @view_definition.update(duck_db_query: @query_result)
 
@@ -66,7 +68,6 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def run_query
-    @view_definition = ViewDefinition.find(params[:view_definition_id])
     @query = @view_definition.duck_db_query
 
     Rails.logger.info "Executing query: #{@query}"
@@ -90,8 +91,6 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def save_to_superset
-    @view_definition = ViewDefinition.find(params[:view_definition_id])
-
     res = ::Superset::Services::ApiService.new.save_query(
       @view_definition.duck_db_query, "Generated Query #{Time.current.to_i}"
     )
@@ -104,8 +103,6 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def execute_query
-    @view_definition = ViewDefinition.find(params[:view_definition_id])
-
     begin
       # Assuming you have DuckDB connection configured
       result = ActiveRecord::Base.connection.execute(@view_definition.duck_db_query)
@@ -124,7 +121,15 @@ class ViewDefinitionsController < ApplicationController
   private
 
   def set_view_definition
-    @view_definition = ViewDefinition.find(params[:id])
+    @view_definition = session_scoped_resource(ViewDefinition).find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to session_root_path, alert: "View definition not found"
+  end
+
+  def set_view_definition_by_view_definition_id
+    @view_definition = session_scoped_resource(ViewDefinition).find(params[:view_definition_id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to session_root_path, alert: "View definition not found"
   end
 
   def view_definition_params

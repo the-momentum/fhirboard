@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_17_092453) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_16_115930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,16 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_17_092453) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "export_path_url"
+    t.bigint "session_id"
+    t.boolean "sample", default: false
+    t.index ["session_id"], name: "index_analyses_on_session_id"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_sessions_on_token", unique: true
   end
 
   create_table "settings", force: :cascade do |t|
@@ -38,9 +48,13 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_17_092453) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "duck_db_query"
-    t.bigint "analysis_id"
+    t.bigint "analysis_id", null: false
+    t.bigint "session_id"
     t.index ["analysis_id"], name: "index_view_definitions_on_analysis_id"
+    t.index ["session_id"], name: "index_view_definitions_on_session_id"
   end
 
+  add_foreign_key "analyses", "sessions"
   add_foreign_key "view_definitions", "analyses"
+  add_foreign_key "view_definitions", "sessions"
 end
