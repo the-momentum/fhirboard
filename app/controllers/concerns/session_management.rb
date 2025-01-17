@@ -1,6 +1,8 @@
 module SessionManagement
   extend ActiveSupport::Concern
 
+  COOKIE_NAME = 'session_token'.freeze
+
   included do
     before_action :set_session
     helper_method :current_session, :session_root_path
@@ -35,7 +37,7 @@ module SessionManagement
   end
 
   def find_existing_session
-    token = session_token_from_params || session_token_from_header
+    token = session_token_from_params || session_token_from_cookie
     Session.find_by(token:) if token.present?
   end
 
@@ -43,12 +45,17 @@ module SessionManagement
     params[:session_token]
   end
 
-  def session_token_from_header
-    request.headers['X-Session-Token']
+  def session_token_from_cookie
+    cookies[COOKIE_NAME]
   end
 
   def set_session_token(token)
-    response.headers['X-Session-Token'] = token
+    cookies[COOKIE_NAME] = {
+      value: token,
+      secure: Rails.env.production?,
+      httponly: true,
+      same_site: :strict
+    }
   end
 
   def public_path?
