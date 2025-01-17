@@ -7,6 +7,7 @@ module Sessions
         Session.transaction do
           session = Session.create!
           assign_sample_analyses(session)
+          create_superset_user(session)
           session
         end
       end
@@ -38,6 +39,10 @@ module Sessions
           Analysis.import(new_analyses)
           ViewDefinition.import(new_view_definitions)
         end
+      end
+
+      def create_superset_user(session)
+        Superset::Services::ApiService.new(current_session: session).create_user
       end
 
       def sample_analyses

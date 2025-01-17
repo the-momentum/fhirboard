@@ -33,7 +33,7 @@ class AnalysesController < ApplicationController
 
   def export_to_superset
     @analysis.view_definitions.each do |vd|
-      ::Superset::Services::ApiService.new.save_query(
+      ::Superset::Services::ApiService.new(current_session:).save_query(
         vd.duck_db_query, "[#{analysis.name}] #{vd.name}"
       )
     end

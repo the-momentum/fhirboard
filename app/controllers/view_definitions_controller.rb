@@ -91,7 +91,7 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def save_to_superset
-    res = ::Superset::Services::ApiService.new.save_query(
+    res = ::Superset::Services::ApiService.new(current_session:).save_query(
       @view_definition.duck_db_query, "Generated Query #{Time.current.to_i}"
     )
 
