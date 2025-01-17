@@ -2,6 +2,7 @@
 
 source "https://rubygems.org"
 
+gem "activerecord-import"
 gem "amazing_print"
 gem "bcrypt"
 gem "bootsnap", ">= 1.4.2", require: false

@@ -18,7 +18,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="f-full">
+  <body class="h-full" data-controller="session">
     <div>
       <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
       <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
@@ -89,7 +89,7 @@
                   <% end %>
                 </div>
                 <ul role="list" class="-mx-2 space-y-1">
-                  <% Analysis.all.each do |a| %>
+                  <% session_analyses.each do |a| %>
                     <li data-dropdown-toggle="dropdown">
                       <%= link_to a.name, analysis_path(a.id), class: "group flex gap-x-3 rounded-md bg-gray-800 p-2 text-sm/6 font-semibold text-white hover:bg-gray-700" %>
                     </li>
@@ -101,11 +101,14 @@
         </div>
       </div>
 
-      <main class="py-10 lg:pl-72">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <%= yield %>
-        </div>
-      </main>
+     <main class="py-10 lg:pl-72">
+       <div class="bg-indigo-700 px-4 py-2 mb-4">
+         <%= session_link %>
+       </div>
+       <div class="px-4 sm:px-6 lg:px-8">
+         <%= yield %>
+       </div>
+     </main>
     </div>
   </body>
 </html>

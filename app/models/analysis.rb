@@ -8,6 +8,11 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  export_path_url :text
+#  session_id      :integer
+#
+# Indexes
+#
+#  index_analyses_on_session_id  (session_id)
 #
 
 class Analysis < ApplicationRecord
@@ -15,4 +20,5 @@ class Analysis < ApplicationRecord
             presence: true
 
   has_many :view_definitions, dependent: :destroy
+  belongs_to :session, optional: true
 end
