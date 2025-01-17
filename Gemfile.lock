@@ -55,6 +55,8 @@ GEM
       activemodel (= 8.0.0)
       activesupport (= 8.0.0)
       timeout (>= 0.4.0)
+    activerecord-import (2.0.0)
+      activerecord (>= 4.2)
     activestorage (8.0.0)
       actionpack (= 8.0.0)
       activejob (= 8.0.0)
@@ -473,6 +475,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_record_query_trace
+  activerecord-import
   amazing_print
   annotate
   bcrypt
