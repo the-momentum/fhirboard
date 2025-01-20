@@ -3,70 +3,12 @@
 describe Sessions::Services::Create do
   subject(:call) { described_class.new.call }
 
+  let(:superset_database_id) { 1 }
+
   before do
-    stub_request(:post, "http://superset:8088/api/v1/security/login")
-      .with(
-        body:    {
-          username: "admin",
-          password: "admin",
-          provider: "db",
-          refresh:  true
-        }.to_json,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      )
-      .to_return(
-        status:  200,
-        body:    { access_token: "fake_token" }.to_json,
-        headers: { "Content-Type": "application/json" }
-      )
-
-    stub_request(:get, "http://superset:8088/api/v1/security/csrf_token/")
-      .with(
-        headers: {
-          Authorization: "Bearer fake_token"
-        }
-      )
-      .to_return(
-        status:  200,
-        body:    { result: "fake_csrf_token" }.to_json,
-        headers: { "Content-Type": "application/json" }
-      )
-
-    stub_request(:post, "http://superset:8088/api/v1/security/users/")
-      .with(
-        headers: {
-          Authorization:  "Bearer fake_token",
-          "X-CSRFToken":  "fake_csrf_token",
-          "Content-Type": "application/json"
-        },
-        body:    hash_including(
-          first_name: "fhirboard",
-          last_name:  "user",
-          active:     true,
-          roles:      [1]
-        )
-      )
-      .to_return(
-        status:  200,
-        body:    { id: 1 }.to_json,
-        headers: { "Content-Type": "application/json" }
-      )
-
-    stub_request(:post, "http://superset:8088/api/v1/database/")
-      .with(
-        headers: {
-          Authorization:  "Bearer fake_token",
-          "X-CSRFToken":  "fake_csrf_token",
-          "Content-Type": "application/json"
-        }
-      )
-      .to_return(
-        status:  200,
-        body:    { id: 123 }.to_json,
-        headers: { "Content-Type" => "application/json" }
-      )
+    allow_any_instance_of(Superset::Services::CreateAccount)
+      .to receive(:call)
+      .and_return(superset_database_id)
 
     allow_any_instance_of(Utils::Services::InitializeDuckdbDatabase)
       .to receive(:call)
@@ -88,6 +30,25 @@ describe Sessions::Services::Create do
     it "initializes the duckdb database" do
       call
       expect(duckdb_service).to have_received(:call)
+    end
+  end
+
+  describe "superset account creation" do
+    let(:superset_account_service) { instance_double(Superset::Services::CreateAccount) }
+
+    before do
+      allow(Superset::Services::CreateAccount).to receive(:new).and_return(superset_account_service)
+      allow(superset_account_service).to receive(:call).and_return(superset_database_id)
+    end
+
+    it "creates superset account" do
+      call
+      expect(superset_account_service).to have_received(:call)
+    end
+
+    it "saves superset db id in session" do
+      session = call
+      expect(session.superset_db_connection_id).to eq(superset_database_id)
     end
   end
 
@@ -122,40 +83,6 @@ describe Sessions::Services::Create do
 
       analysis = session.analyses.where(name: sample_analysis.name).first
       expect(analysis.view_definitions.pluck(:session_id).uniq).to eq([session.id])
-    end
-  end
-
-  describe "superset integration" do
-    let(:api_service) { instance_double(Superset::Services::ApiService) }
-    let(:api_response) { double(success?: true, body: { "id" => 123 }) }
-
-    before do
-      allow(Superset::Services::ApiService).to receive(:new).and_return(api_service)
-      allow(api_service).to receive(:create_user)
-      allow(api_service).to receive(:create_database_connection).and_return(api_response)
-    end
-
-    it "creates a superset user" do
-      call
-      expect(api_service).to have_received(:create_user)
-    end
-
-    it "creates a database connection" do
-      call
-      expect(api_service).to have_received(:create_database_connection)
-    end
-
-    it "saves the database connection id to the session" do
-      session = call
-      expect(session.superset_db_connection_id).to eq(123)
-    end
-
-    context "when database connection creation fails" do
-      let(:api_response) { double(success?: false, body: { "error" => "Failed" }) }
-
-      it "raises an error" do
-        expect { call }.to raise_error(/Failed to create Superset database/)
-      end
     end
   end
 end

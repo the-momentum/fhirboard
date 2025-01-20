@@ -33,7 +33,7 @@ class AnalysesController < ApplicationController
 
   def export_to_superset
     @analysis.view_definitions.each do |vd|
-      ::Superset::Services::ApiService.new(current_session:).save_query(
+      ::Superset::Services::Utils.new(current_session:).save_query(
         vd.duck_db_query, "[#{analysis.name}] #{vd.name}"
       )
     end
@@ -41,7 +41,7 @@ class AnalysesController < ApplicationController
 
   def save_as_views
     begin
-      db  = DuckDB::Database.open("/app/fhir-export/#{@current_session.token}.duckdb")
+      db  = DuckDB::Database.open("/app/fhir-export/datasources/#{@current_session.token}.duckdb")
       con = db.connect
 
       @analysis.view_definitions.each do |vd|

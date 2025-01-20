@@ -37,8 +37,8 @@ class Session < ApplicationRecord
   end
 
   def generate_superset_credentials
-    self.superset_email    = "#{SecureRandom.hex(12)}@example.com"
     self.superset_username = SecureRandom.hex(12)
     self.superset_password = SecureRandom.hex(12)
+    self.superset_email    = "#{self.superset_username}@example.com"
   end
 end

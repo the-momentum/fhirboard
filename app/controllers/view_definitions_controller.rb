@@ -73,7 +73,7 @@ class ViewDefinitionsController < ApplicationController
     Rails.logger.info "Executing query: #{@query}"
 
     begin
-      db = DuckDB::Database.open("lib/fhir-export/#{@current_session.token}.duckdb")
+      db = DuckDB::Database.open("lib/fhir-export/datasources/#{@current_session.token}.duckdb")
       con = db.connect
 
       @result = con.query(@query)
@@ -91,7 +91,7 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def save_to_superset
-    res = ::Superset::Services::ApiService.new(current_session:).save_query(
+    res = ::Superset::Services::Utils.new(current_session:).save_query(
       @view_definition.duck_db_query, "Generated Query #{Time.current.to_i}"
     )
 

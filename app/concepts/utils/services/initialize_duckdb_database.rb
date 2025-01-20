@@ -19,10 +19,13 @@ module Utils
       end
 
       def call
-        db = DuckDB::Database.open("lib/fhir-export/#{@current_session.token}.duckdb")
+        db = DuckDB::Database.open("lib/fhir-export/datasources/#{@current_session.token}.duckdb")
         con = db.connect
 
         con.query(MACROS.join("\n"))
+
+        con.disconnect
+        db.close
       end
     end
   end
