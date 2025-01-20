@@ -21,18 +21,3 @@ Analysis.find_or_create_by!(
     )
   end
 end
-
-## Creating duckdb connection in Superset
-existing_db_id = Setting.get("superset_duckdb_database_id")
-
-if existing_db_id.present?
-  puts "DuckDB database already exists with ID: #{existing_db_id}"
-else
-  response = ::Superset::Services::ApiService.new.create_database_connection("duckdb_persistent")
-  
-  new_db_id = response.body["id"]
-  
-  Setting.set('superset_duckdb_database_id', new_db_id, 'integer')
-  
-  puts "Created new DuckDB database with ID: #{new_db_id}"
-end

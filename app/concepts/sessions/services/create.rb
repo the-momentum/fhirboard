@@ -5,12 +5,13 @@ module Sessions
     class Create
       def call
         Session.transaction do
-          session = Session.create!
-          assign_sample_analyses(session)
-          create_superset_user(session)
-          create_duckdb_database(session)
-          create_superset_database_connection(session)
-          session
+          @session = Session.create!
+          assign_sample_analyses
+          create_duckdb_database
+          create_superset_database_connection
+          create_superset_database_access_role
+          create_superset_user
+          @session
         end
       end
 
@@ -20,20 +21,19 @@ module Sessions
         Session.create!
       end
 
-      def assign_sample_analyses(session)
+      def assign_sample_analyses
         sample_analyses.each_slice(100) do |analyses_batch|
           new_analyses = []
           new_view_definitions = []
 
           analyses_batch.each do |analysis|
-            new_analysis = build_duplicated_analysis(analysis, session)
+            new_analysis = build_duplicated_analysis(analysis)
             new_analyses << new_analysis
 
             analysis.view_definitions.each do |view_definition|
               new_view_definitions << build_duplicated_view_definition(
                 view_definition,
-                new_analysis,
-                session
+                new_analysis
               )
             end
           end
@@ -43,40 +43,48 @@ module Sessions
         end
       end
 
-      def create_superset_user(session)
-        Superset::Services::ApiService.new(current_session: session).create_user
-      end
-
-      def create_duckdb_database(session)
-        Utils::Services::InitializeDuckdbDatabase.new(current_session: session).call
-      end
-
-      def create_superset_database_connection(session)
-        api_service = Superset::Services::ApiService.new(current_session: session)
-        response = api_service.create_database_connection
-
-        raise "Failed to create Superset database: #{response.body}" unless response.success?
-
-        database_id = response.body["id"]
-        session.update(superset_db_connection_id: database_id)
-      end
-
       def sample_analyses
         Analysis.includes(:view_definitions).where(sample: true)
       end
 
-      def build_duplicated_analysis(analysis, session)
+      def build_duplicated_analysis(analysis)
         analysis.dup.tap do |new_analysis|
-          new_analysis.session = session
+          new_analysis.session = @session
           new_analysis.sample = false
         end
       end
 
-      def build_duplicated_view_definition(view_definition, analysis, session)
+      def build_duplicated_view_definition(view_definition, analysis)
         view_definition.dup.tap do |new_view_definition|
           new_view_definition.analysis = analysis
-          new_view_definition.session = session
+          new_view_definition.session = @session
         end
+      end
+
+      def create_superset_user
+        response = superset_api_service.create_user
+
+        raise "Failed to create Superset database: #{response.body}" unless response.success?
+      end
+
+      def create_duckdb_database
+        Utils::Services::InitializeDuckdbDatabase.new(current_session: @session).call
+      end
+
+      def create_superset_database_connection
+        database_id = superset_api_service.create_database_connection
+
+        @session.update(superset_db_connection_id: database_id)
+      end
+
+      def create_superset_database_access_role
+        response = superset_api_service.create_database_access_role
+
+        raise "Failed to create Superset database access role: #{response.body}" unless response.success?
+      end
+
+      def superset_api_service
+        @superset_api_service ||= Superset::Services::ApiService.new(current_session: @session)
       end
     end
   end
