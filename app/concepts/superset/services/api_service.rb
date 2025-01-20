@@ -4,7 +4,7 @@
 module Superset
   module Services
     class ApiService
-      SUPERSET_BASE_URL = "#{ENV['SUPERSET_INTERNAL_URL']}/api/v1/"
+      SUPERSET_BASE_URL = "#{ENV.fetch('SUPERSET_INTERNAL_URL', nil)}/api/v1/".freeze
       SUPERSET_ADMIN_ROLE_ID = 1
 
       def initialize(current_session: nil)
@@ -36,8 +36,8 @@ module Superset
       def login_as_admin_user
         response = @conn.post("security/login") do |req|
           req.body = {
-            username: ENV['SUPERSET_ADMIN_USERNAME'],
-            password: ENV['SUPERSET_ADMIN_PASSWORD'],
+            username: ENV.fetch("SUPERSET_ADMIN_USERNAME", nil),
+            password: ENV.fetch("SUPERSET_ADMIN_PASSWORD", nil),
             provider: "db",
             refresh:  true
           }
@@ -65,14 +65,14 @@ module Superset
           req.headers["Authorization"] = "Bearer #{@auth_token}"
           req.headers["x-csrftoken"] = @csrf_token
           req.body = {
-            label:       label,
-            sql:         sql,
+            label: label,
+            sql:   sql,
             db_id: Setting.get("superset_duckdb_database_id")
           }
         end
       end
 
-      def create_database(name)
+      def create_database_connection
         login_as_admin_user
         get_csrf_token
 
@@ -82,8 +82,8 @@ module Superset
           req.body = {
             allow_dml:            true,
             configuration_method: "sqlalchemy_form",
-            database_name:        name,
-            sqlalchemy_uri:       "duckdb:////app/fhir-export/#{name}.duckdb"
+            database_name:        @current_session.token,
+            sqlalchemy_uri:       "duckdb:////app/fhir-export/#{@current_session.token}.duckdb"
           }
         end
       end
@@ -91,8 +91,8 @@ module Superset
       def create_user
         login_as_admin_user
         get_csrf_token
-    
-        response = @conn.post("security/users/") do |req|
+
+        @conn.post("security/users/") do |req|
           req.headers["Authorization"] = "Bearer #{@auth_token}"
           req.headers["x-csrftoken"] = @csrf_token
           req.body = {

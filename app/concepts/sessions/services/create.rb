@@ -8,6 +8,8 @@ module Sessions
           session = Session.create!
           assign_sample_analyses(session)
           create_superset_user(session)
+          create_duckdb_database(session)
+          create_superset_database_connection(session)
           session
         end
       end
@@ -26,11 +28,11 @@ module Sessions
           analyses_batch.each do |analysis|
             new_analysis = build_duplicated_analysis(analysis, session)
             new_analyses << new_analysis
-            
+
             analysis.view_definitions.each do |view_definition|
               new_view_definitions << build_duplicated_view_definition(
-                view_definition, 
-                new_analysis, 
+                view_definition,
+                new_analysis,
                 session
               )
             end
@@ -43,6 +45,20 @@ module Sessions
 
       def create_superset_user(session)
         Superset::Services::ApiService.new(current_session: session).create_user
+      end
+
+      def create_duckdb_database(session)
+        Utils::Services::InitializeDuckdbDatabase.new(current_session: session).call
+      end
+
+      def create_superset_database_connection(session)
+        api_service = Superset::Services::ApiService.new(current_session: session)
+        response = api_service.create_database_connection
+
+        raise "Failed to create Superset database: #{response.body}" unless response.success?
+
+        database_id = response.body["id"]
+        session.update(superset_db_connection_id: database_id)
       end
 
       def sample_analyses

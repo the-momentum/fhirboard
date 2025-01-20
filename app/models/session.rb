@@ -1,14 +1,17 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: sessions
 #
-#  id                :integer          not null, primary key
-#  token             :string           not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  superset_username :string
-#  superset_password :string
-#  superset_email    :string
+#  id                        :integer          not null, primary key
+#  token                     :string           not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  superset_username         :string
+#  superset_password         :string
+#  superset_email            :string
+#  superset_db_connection_id :integer
 #
 # Indexes
 #
@@ -20,7 +23,7 @@ class Session < ApplicationRecord
   validates :superset_username, presence: true, uniqueness: true
   validates :superset_password, presence: true
   validates :superset_email, presence: true, uniqueness: true
-  
+
   before_validation :generate_token, on: :create
   before_validation :generate_superset_credentials, on: :create
 

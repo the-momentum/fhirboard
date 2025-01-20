@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module ViewDefinitions
   module Services
     class GenerateQuery
       class Error < StandardError; end
 
       TEMPLATES = {
-        create_view: 'lib/view_definitions/create_view_template.sql',
-        query: 'lib/view_definitions/query_template.sql'
+        create_view: "lib/view_definitions/create_view_template.sql",
+        query:       "lib/view_definitions/query_template.sql"
       }.freeze
 
       def initialize(view_definition, template_type: :query)
@@ -31,10 +33,10 @@ module ViewDefinitions
       end
 
       def validate_template_type!
-        unless TEMPLATES.key?(template_type)
-          valid_types = TEMPLATES.keys.join(', ')
-          raise Error, "Invalid template type: #{template_type}. Valid types are: #{valid_types}"
-        end
+        return if TEMPLATES.key?(template_type)
+
+        valid_types = TEMPLATES.keys.join(", ")
+        raise Error, "Invalid template type: #{template_type}. Valid types are: #{valid_types}"
       end
 
       def write_temp_file
@@ -51,11 +53,11 @@ module ViewDefinitions
       # Quick workaround to remove console.log() statement from the result (*** compiling ... ***)
       # Probably there is a better way to resolve this
       def clean_query_result(result)
-        result.sub(/^.*\*\*\* compiling.*\n/, '')
+        result.sub(/^.*\*\*\* compiling.*\n/, "")
       end
 
       def cleanup_temp_file
-        File.delete(temp_file_path) if File.exist?(temp_file_path)
+        FileUtils.rm_f(temp_file_path)
       end
 
       def temp_file_path

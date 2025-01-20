@@ -41,7 +41,7 @@ class AnalysesController < ApplicationController
 
   def save_as_views
     begin
-      db  = DuckDB::Database.open("/app/fhir-export/duckdb_persistent.duckdb")
+      db  = DuckDB::Database.open("/app/fhir-export/#{@current_session.token}.duckdb")
       con = db.connect
 
       @analysis.view_definitions.each do |vd|
