@@ -25,14 +25,11 @@ This project provides a containerized environment that, with a simple docker com
 - SQL-on-FHIR Enthusiasts: While there is a [playground](https://sql-on-fhir.org/extra/playground.html) on the official page, it doesn't allow you to run queries on your own FHIR export data or create views to combine data
 - Data Analysts: Easily visualize FHIR analytics data - with the app and Superset in one container, you can get started quickly
 
-##  Setup
+##  Local setup
 
 ### 1. Create `.env` file in project's root directory
 
 ```
-SUPERSET_ADMIN_USERNAME=*********
-SUPERSET_ADMIN_PASSWORD=*********
-SUPERSET_ADMIN_EMAIL=*********
 SUPERSET_INTERNAL_URL="http://superset:8088"
 SUPERSET_PUBLIC_URL="http://localhost:8088"
 ```
@@ -40,10 +37,11 @@ SUPERSET_PUBLIC_URL="http://localhost:8088"
 ### 2. Build docker images and up compose
 
 ```
-docker-compose up --build # running for first time to build images 
+# running for the first time to build images 
+docker-compose -f docker-compose.dev.yml up --build                   
 
-docker-compose up         # up compose
-```
+# up compose
+docker compose -f docker-compose.dev.yml up 
 
 ### 3. Seed database
 
