@@ -44,6 +44,7 @@ services:
       - "3000:3000"
     volumes:
       - ./lib/fhir-export:/app/fhir-export
+      - ./lib/datasources:/app/datasources
     env_file: .env
     labels:
       - "traefik.enable=true"
@@ -64,6 +65,7 @@ services:
         - ADMIN_PASSWORD=${SUPERSET_ADMIN_PASSWORD}
     volumes:
       - ./lib/fhir-export:/app/fhir-export
+      - ./lib/datasources:/app/datasources
     env_file: .env
     ports:
       - '8088:8088'

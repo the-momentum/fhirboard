@@ -1,5 +1,6 @@
 class ViewDefinitionsController < ApplicationController
   include SessionScoped
+  include DuckdbHelpers
 
   before_action :set_view_definition, only: %i[show edit update destroy]
   before_action :set_view_definition_by_view_definition_id,
@@ -73,7 +74,7 @@ class ViewDefinitionsController < ApplicationController
     Rails.logger.info "Executing query: #{@query}"
 
     begin
-      db = DuckDB::Database.open("lib/fhir-export/duckdb_persistent.duckdb")
+      db = DuckDB::Database.open(duckdb_path(@current_session.token))
       con = db.connect
 
       @result = con.query(@query)
@@ -91,7 +92,7 @@ class ViewDefinitionsController < ApplicationController
   end
 
   def save_to_superset
-    res = ::Superset::Services::ApiService.new.save_query(
+    res = ::Superset::Services::Utils.new(current_session:).save_query(
       @view_definition.duck_db_query, "Generated Query #{Time.current.to_i}"
     )
 

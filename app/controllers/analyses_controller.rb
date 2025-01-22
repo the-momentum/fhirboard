@@ -2,6 +2,7 @@
 
 class AnalysesController < ApplicationController
   include SessionScoped
+  include DuckdbHelpers
 
   before_action :set_analysis, only: %i[show update]
   before_action :set_analysis_by_analysis_id,
@@ -33,7 +34,7 @@ class AnalysesController < ApplicationController
 
   def export_to_superset
     @analysis.view_definitions.each do |vd|
-      ::Superset::Services::ApiService.new.save_query(
+      ::Superset::Services::Utils.new(current_session:).save_query(
         vd.duck_db_query, "[#{analysis.name}] #{vd.name}"
       )
     end
@@ -41,7 +42,7 @@ class AnalysesController < ApplicationController
 
   def save_as_views
     begin
-      db  = DuckDB::Database.open("/app/fhir-export/duckdb_persistent.duckdb")
+      db  = DuckDB::Database.open(duckdb_path(@current_session.token))
       con = db.connect
 
       @analysis.view_definitions.each do |vd|
