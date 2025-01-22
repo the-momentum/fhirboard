@@ -42,6 +42,7 @@ docker-compose -f docker-compose.dev.yml up --build
 
 # up compose
 docker compose -f docker-compose.dev.yml up 
+```
 
 ### 3. Seed database
 
