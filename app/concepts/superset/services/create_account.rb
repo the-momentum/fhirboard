@@ -32,7 +32,7 @@ module Superset
             allow_dml:            true,
             configuration_method: "sqlalchemy_form",
             database_name:        @current_session.token,
-            sqlalchemy_uri:       "duckdb:////app/fhir-export/datasources/#{@current_session.token}.duckdb"
+            sqlalchemy_uri:       "duckdb:////app/datasources/#{@current_session.token}.duckdb"
           }
         end
         raise "Failed to create Superset database: #{response.body}" unless response.success?

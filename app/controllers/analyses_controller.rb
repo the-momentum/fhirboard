@@ -2,6 +2,7 @@
 
 class AnalysesController < ApplicationController
   include SessionScoped
+  include DuckdbHelpers
 
   before_action :set_analysis, only: %i[show update]
   before_action :set_analysis_by_analysis_id,
@@ -41,7 +42,7 @@ class AnalysesController < ApplicationController
 
   def save_as_views
     begin
-      db  = DuckDB::Database.open("/app/fhir-export/datasources/#{@current_session.token}.duckdb")
+      db  = DuckDB::Database.open(duckdb_path(@current_session.token))
       con = db.connect
 
       @analysis.view_definitions.each do |vd|

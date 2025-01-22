@@ -66,5 +66,5 @@ vendor/.bun
 
 /config/credentials/production.key
 
-# generated duckdb database file
-lib/fhir-export/datasources/*.duckdb
+# generated duckdb database files
+lib/datasources/*.duckdb

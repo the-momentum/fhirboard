@@ -28,6 +28,7 @@ services:
       - gem_cache:/rails/vendor/bundle
       - /rails/.bun
       - ./lib/fhir-export:/app/fhir-export
+      - ./lib/datasources:/app/datasources
     env_file: .env
     environment:
       - RAILS_ENV=development
@@ -49,6 +50,7 @@ services:
         dockerfile: superset/Dockerfile
       volumes:
         - ./lib/fhir-export:/app/fhir-export
+        - ./lib/datasources:/app/datasources
       environment:
         - ADMIN_USERNAME=admin
         - ADMIN_EMAIL=admin@superset.com
@@ -69,6 +71,7 @@ services:
   #     - .:/rails
   #     - gem_cache:/rails/vendor/bundle
   #     - ./lib/fhir-export:/app/fhir-export
+  #     - ./lib/datasources:/app/datasources
   #   env_file: .env
   #   tmpfs:
   #     - /rails/tmp/pids:mode=770,size=1k,uid=1000,gid=1000

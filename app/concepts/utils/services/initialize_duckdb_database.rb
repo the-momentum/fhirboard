@@ -3,6 +3,8 @@
 module Utils
   module Services
     class InitializeDuckdbDatabase
+      include DuckdbHelpers
+
       MACROS = [
         "CREATE OR REPLACE MACRO as_list(a) AS if(a IS NULL, [], [a]);",
         "CREATE OR REPLACE MACRO ifnull2(a, b) AS ifnull(a, b);",
@@ -19,7 +21,7 @@ module Utils
       end
 
       def call
-        db = DuckDB::Database.open("lib/fhir-export/datasources/#{@current_session.token}.duckdb")
+        db = DuckDB::Database.open(duckdb_path(@current_session.token))
         con = db.connect
 
         con.query(MACROS.join("\n"))
