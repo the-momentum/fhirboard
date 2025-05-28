@@ -1,0 +1,140 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download duckdb
+        run: wget https://github.com/duckdb/duckdb/releases/download/v1.2.2/libduckdb-linux-amd64.zip
+
+      - name: Prepare libs
+        run: |
+          unzip libduckdb-linux-amd64.zip -d libduckdb
+          sudo mv libduckdb/duckdb.* /usr/local/include/
+          sudo mv libduckdb/libduckdb.so /usr/local/lib
+          sudo ldconfig /usr/local/lib
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Scan for common Rails security vulnerabilities using static analysis
+        run: bin/brakeman --no-pager
+
+  scan_js:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download duckdb
+        run: wget https://github.com/duckdb/duckdb/releases/download/v1.2.2/libduckdb-linux-amd64.zip
+
+      - name: Prepare libs
+        run: |
+          unzip libduckdb-linux-amd64.zip -d libduckdb
+          sudo mv libduckdb/duckdb.* /usr/local/include/
+          sudo mv libduckdb/libduckdb.so /usr/local/lib
+          sudo ldconfig /usr/local/lib
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Scan for security vulnerabilities in JavaScript dependencies
+        run: bin/importmap audit
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download duckdb
+        run: wget https://github.com/duckdb/duckdb/releases/download/v1.2.2/libduckdb-linux-amd64.zip
+
+      - name: Prepare libs
+        run: |
+          unzip libduckdb-linux-amd64.zip -d libduckdb
+          sudo mv libduckdb/duckdb.* /usr/local/include/
+          sudo mv libduckdb/libduckdb.so /usr/local/lib
+          sudo ldconfig /usr/local/lib
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Lint code for consistent style
+        run: bin/rubocop -f github
+
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config google-chrome-stable
+
+      - name: Download duckdb
+        run: wget https://github.com/duckdb/duckdb/releases/download/v1.2.2/libduckdb-linux-amd64.zip
+
+      - name: Prepare libs
+        run: |
+          unzip libduckdb-linux-amd64.zip -d libduckdb
+          sudo mv libduckdb/duckdb.* /usr/local/include/
+          sudo mv libduckdb/libduckdb.so /usr/local/lib
+          sudo ldconfig /usr/local/lib
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Prepare db for tests
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+        run: bin/rails db:test:prepare
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          REDIS_URL: redis://localhost:6379/0
+        run: bundle exec rspec

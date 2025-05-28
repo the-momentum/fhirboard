@@ -39,7 +39,7 @@ group :development do
   gem "annotate"
   gem "better_errors"
   gem "binding_of_caller"
-  gem "brakeman", require: false
+  gem "brakeman", "~> 7.0", require: false
   gem "bundler-audit"
   gem "database_consistency"
   gem "rails_best_practices"

@@ -95,7 +95,7 @@ GEM
       debug_inspector (>= 1.2.0)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
-    brakeman (6.2.2)
+    brakeman (7.0.2)
       racc
     builder (3.3.0)
     bundler-audit (0.9.2)
@@ -482,7 +482,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   bootsnap (>= 1.4.2)
-  brakeman
+  brakeman (~> 7.0)
   bundler-audit
   database_cleaner
   database_cleaner-active_record
